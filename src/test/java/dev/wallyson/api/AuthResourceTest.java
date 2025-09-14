@@ -78,4 +78,39 @@ class AuthResourceTest {
                 .then()
                 .statusCode(401);
     }
+
+    @Test
+    @DisplayName("Com JWT válido, /auth/me deve retornar o username")
+    void shouldReturnMeWithValidToken() {
+        String token =
+                given()
+                        .contentType(ContentType.JSON)
+                        .body("{\"username\":\"admin\",\"password\":\"admin123\"}")
+                        .when()
+                        .post("/auth/login")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .path("token");
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .when()
+                .get("/auth/me")
+                .then()
+                .statusCode(200)
+                .body("username", equalTo("admin"))
+                .body("roles", hasItems("ADMIN","USER"));
+    }
+
+    @Test
+    @DisplayName("Sem JWT, /auth/me deve retornar 401")
+    void shouldReturn401OnMeWithoutToken() {
+        given()
+                .when()
+                .get("/auth/me")
+                .then()
+                .statusCode(401);
+    }
+
 }
