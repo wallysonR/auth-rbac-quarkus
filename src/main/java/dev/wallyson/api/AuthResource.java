@@ -9,11 +9,10 @@ import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Path("/auth")
@@ -47,6 +46,9 @@ public class AuthResource {
     public Response me() {
         var name = identity.getPrincipal().getName();
         var roles = identity.getRoles();
-        return Response.ok(name).build();
+        return Response.ok(Map.of(
+                "username", name,
+                "roles", roles
+        )).build();
     }
 }
